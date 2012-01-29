@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>CharCodes do Javascript</title>
+</head>
+<body>
+<table id="tabela1">
+<thead>
+<tr>
+<td colspan="2">Tabela de CharCodes</td>
+</tr>
+</thead>
+<TBODY></TBODY>
+</table>
+<body>
+<html>
+<script type="Text/Javascript">
+var tabela = document.getElementById("tabela1");
+var tbody = tabela.getElementsByTagName("TBODY")[0];
+
+for (var i = 0; i <= 3000; i++) {
+var row = document.createElement("TR");
+var td1 = document.createElement("TD");
+td1.appendChild(document.createTextNode(i + " "));
+
+var td2 = document.createElement("TD");
+td2.appendChild(document.createTextNode(String.fromCharCode(i) + " "));
+
+row.appendChild(td1);
+row.appendChild(td2);
+tbody.appendChild(row);
+}
+</script>
+</body>
+</html>

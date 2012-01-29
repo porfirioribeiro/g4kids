@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> </title>
+        <script type="text/javascript" charset="utf-8" src="inherit.js"></script>
+        <script type="text/javascript" charset="utf-8" src="input.js"></script>
+        <script type="text/javascript" charset="utf-8" src="anim.js"></script>
+        <script type="text/javascript" charset="utf-8" src="game.js"></script>
+        <script type="text/javascript" charset="utf-8">
+
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas" width="800" height="600"></canvas>
+        <script type="text/javascript" charset="utf-8">
+
+
+
+
+
+            var g=new Game(Canvas.fromId("canvas"));
+
+            g.x=0;
+            g.xSpeed=1;
+            g.update=function(delta){
+                this.d=delta;
+                console.log(delta)
+                if (this.x+10>=this.canvasWidth)
+                    this.xSpeed=-1;
+                if (this.x<=0){
+                    this.xSpeed=1;
+                }
+                this.x+=this.xSpeed*(delta);
+            }
+            g.draw=function(ctx){
+                if (Input.mouse.moving)
+                    ctx.fillStyle="red";
+                else
+                    ctx.fillStyle="blue";
+                ctx.strokeStyle="black";
+                ctx.drawRect(this.x,10,10,10);
+                ctx.drawRect(Input.mouse.x,Input.mouse.y,5,5);
+
+                ctx.fillStyle = "Red";
+                ctx.fillText("Mouse left down: % right down: %".arg(Input.mouse.leftDown,Input.mouse.rightDown),10,100)
+                ctx.fillText(parseInt(this.fps)+" - "+this.d,10,120);
+
+            }
+            //g.paused=true;
+
+        </script>
+    </body>
+</html>
