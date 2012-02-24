@@ -6,7 +6,9 @@ if (!window.requestAnimationFrame)
               window.oRequestAnimationFrame      ||
               window.msRequestAnimationFrame     ||
               function( callback ){
-                window.setTimeout(callback, 1000 / 60);
+                window.setTimeout(function(){
+                    callback(Date.now());
+                }, 1000 / 60);
               };
 
 //mozAnimationStartTime
@@ -16,13 +18,14 @@ Object.defineProperty(window,"animationStartTime",{
    }
 });
 
-CanvasRenderingContext2D.prototype.drawRect=function(x,y,width,height){
+
+window.CanvasRenderingContext2D.prototype.drawRect=function(x,y,width,height){
     this.fillRect(x,y,width,height);
     this.strokeRect(x,y,width,height);
 };
 
 
-var Canvas=Class.extend({
+var Canvas=Class.extend("Canvas",{
     className:"Canvas",
     element:null,
     ctx:null,

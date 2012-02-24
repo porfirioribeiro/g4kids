@@ -1,5 +1,4 @@
-var Game=Class.extend({
-    className:"Game",
+var Game=Class.extend("Game",{
     paused:false,
     canvas:null,
     backBufferCanvas:null,
@@ -7,6 +6,7 @@ var Game=Class.extend({
     canvasHeight:0,
     startTime:0,
     fps:0,
+    scene:null,
     init:function(canvas){
         this.canvas=canvas;
         this.canvasWidth=canvas.element.width;
@@ -14,6 +14,7 @@ var Game=Class.extend({
         this.backBufferCanvas=new Canvas(this.canvasWidth, this.canvasHeight);
         this.startTime=window.animationStartTime;
         //this.fps=0;
+        this.scene=new Scene(this);
         Input.register(this.canvas.element);
         this._updateCallback=this._update.bind(this);
         window.requestAnimationFrame(this._updateCallback);
@@ -32,15 +33,13 @@ var Game=Class.extend({
         this.canvas.ctx.clearRect(0,0,this.canvas.element.width, this.canvas.element.height);
         this.canvas.ctx.drawImage(this.backBufferCanvas.ctx.canvas,0,0);
         //this.draw(this.canvas.ctx);
+
+    },
+    update:function(delta){
+        this.scene.update(delta);
         Input.update(delta);
     },
-    update:function(time){
-
-    },
     draw:function(ctx){
-
-    },
-    toString:function(){
-        return "My Game Class";
+        this.scene.draw(ctx);
     }
 });

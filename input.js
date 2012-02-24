@@ -11,15 +11,22 @@ var Input={
       middleUp:true,
       rightDown:false,
       rightUp:false,
-      clicked:false
+      clicked:false,
+      contextMenu:false
     },
     mouseMoving:false,
     mouseX:0,
     mouseY:0,
+    setCursor:function(cursor){
+        if (typeof cursor!="string")
+            throw new TypeError("Input.setCursor(%t) got %t".arg(String,cursor));
+        this.element.style.cursor=cursor;
+    },
     register:function(element){
         if (!(element instanceof Element))
             throw new TypeError("Element expected on Input.register(%t)".arg(element));
         this.element=element;
+        this.bindFunctions();
         this.enableKeyboard();
         this.enableMouse();
         this.element.style.outline= "none";
@@ -28,100 +35,105 @@ var Input={
         this.element.focus();
     },
     enableKeyboard:function(){
-        this.element.addEventListener("keydown", this.onKeyDown, false);
-        this.element.addEventListener("keyup", this.onKeyUp, false);
+        this.element.addEventListener("keydown", this.boundEvents.onKeyDown, false);
+        this.element.addEventListener("keyup", this.boundEvents.onKeyUp, false);
     },
     disableKeyboard:function(){
-        this.element.removeEventListener("keydown", this.onKeyDown, false);
-        this.element.removeEventListener("keyup", this.onKeyUp, false);
+        this.element.removeEventListener("keydown", this.boundEvents.onKeyDown, false);
+        this.element.removeEventListener("keyup", this.boundEvents.onKeyUp, false);
     },
     enableMouse:function(){
-        this.element.addEventListener("mousedown", this.onMouseDown, false);
-        this.element.addEventListener("mouseup", this.onMouseUp, false);
-        this.element.addEventListener("mousemove", this.onMouseMove, false);
-        this.element.addEventListener("mouseover", this.onMouseOver, false);
-        this.element.addEventListener("mouseout", this.onMouseOut, false);
-        this.element.addEventListener("click", this.onClick, false);
-        this.element.addEventListener("contextmenu", this.onContextMenu, false);
-    },  
+        this.element.addEventListener("mousedown", this.boundEvents.onMouseDown, false);
+        this.element.addEventListener("mouseup", this.boundEvents.onMouseUp, false);
+        this.element.addEventListener("mousemove", this.boundEvents.onMouseMove, false);
+        this.element.addEventListener("mouseover", this.boundEvents.onMouseOver, false);
+        this.element.addEventListener("mouseout", this.boundEvents.onMouseOut, false);
+        this.element.addEventListener("click", this.boundEvents.onClick, false);
+        this.element.addEventListener("contextmenu", this.boundEvents.onContextMenu, false);
+    },
     disableMouse:function(){
-        this.element.removeEventListener("mousedown", this.onMouseDown, false);
-        this.element.removeEventListener("mouseup", this.onMouseUp, false);
-        this.element.removeEventListener("mousemove", this.onMouseMove, false);
-        this.element.removeEventListener("mouseover", this.onMouseOver, false);
-        this.element.removeEventListener("mouseout", this.onMouseOut, false);
-        this.element.removeEventListener("click", this.onClick, false);
-    },
-    preventDefault:function(evt) {
-        if (evt.preventDefault)
-            evt.preventDefault();
-        evt.stopPropagation();
-        evt.returnValue = false;
-        evt.cancelBubble = true;
-        return false;
-    },
-    onKeyDown:function(e){
-        console.log("keydown %t".arg(e));
-        return Input.preventDefault(e);
-    },
-    onKeyUp:function(e){
-        console.log("keyup %t".arg(e));
-        return Input.preventDefault(e);
-    },
-    onMouseDown:function(e){
-        Input.element.focus();
-        switch (e.button) {
-            case 0:
-                Input.mouse.leftDown=true;
-                break;
-            case 1:
-                Input.mouse.middleDown=true;
-                break;
-            case 2:
-                Input.mouse.rightDown=true;
-                break;
-        }
-        return Input.preventDefault(e);
-    },
-    onMouseUp:function(e){
-        switch (e.button) {
-            case 0:
-                Input.mouse.leftDown=false;
-                break;
-            case 1:
-                Input.mouse.middleDown=false;
-                break;
-            case 2:
-                Input.mouse.rightDown=false;
-                break;
-        }
-        return Input.preventDefault(e);
-    },
-    onMouseMove:function(e){
-        Input.mouse.x = e.clientX - Input.element.offsetLeft;
-        Input.mouse.y = e.clientY - Input.element.offsetTop;
-        Input.mouse.moving=true;
-        return Input.preventDefault(e);
-    },
-    onMouseOver:function(e){
-        Input.element.focus();
-        console.log("mouseover %t".arg(e));
-        return Input.preventDefault(e);
-    },
-    onMouseOut:function(e){
-        //console.log("mouseout %t".arg(e));
-        return Input.preventDefault(e);
-    },
-    onClick:function(e){
-        console.log("click %t".arg(e));
-        return Input.preventDefault(e);
-    },
-    onContextMenu:function(e){
-        
-        return Input.preventDefault(e);
+        this.element.removeEventListener("mousedown", this.boundEvents.onMouseDown, false);
+        this.element.removeEventListener("mouseup", this.boundEvents.onMouseUp, false);
+        this.element.removeEventListener("mousemove", this.boundEvents.onMouseMove, false);
+        this.element.removeEventListener("mouseover", this.boundEvents.onMouseOver, false);
+        this.element.removeEventListener("mouseout", this.boundEvents.onMouseOut, false);
+        this.element.removeEventListener("click", this.boundEvents.onClick, false);
     },
     update:function(time){
         this.mouse.moving=false;
+        this.mouse.clicked=false;
+        this.mouse.contextMenu=false;
+    },
+    bindFunctions:function(){
+        for (var e in this.events){
+            this.boundEvents[e]=this.events[e].bind(this);
+        }
+    },
+    boundEvents:{
+    },
+    events:{
+        onKeyDown:function(e){
+            console.log("keydown %t".arg(e));
+            return e.stopEvent();
+        },
+        onKeyUp:function(e){
+            console.log("keyup %t".arg(e));
+            return e.stopEvent();
+        },
+        onMouseDown:function(e){
+            this.element.focus();
+            switch (e.button) {
+                case 0:
+                    this.mouse.leftDown=true;
+                    break;
+                case 1:
+                    this.mouse.middleDown=true;
+                    break;
+                case 2:
+                    this.mouse.rightDown=true;
+                    break;
+            }
+            return e.stopEvent();
+        },
+        onMouseUp:function(e){
+            switch (e.button) {
+                case 0:
+                    this.mouse.leftDown=false;
+                    break;
+                case 1:
+                    this.mouse.middleDown=false;
+                    break;
+                case 2:
+                    this.mouse.rightDown=false;
+                    break;
+            }
+            return e.stopEvent();
+        },
+        onMouseMove:function(e){
+            //  console.log("e.clientY=% offsetTop=% scrollTop=%".arg(e.clientY , this.element.offsetTop , document.body.scrollTop))
+            this.mouse.x = e.clientX - this.element.offsetLeft + this.element.ownerDocument.body.scrollLeft;
+            this.mouse.y = e.clientY - this.element.offsetTop + this.element.ownerDocument.body.scrollTop;
+            this.mouse.moving=true;
+            return e.stopEvent();
+        },
+        onMouseOver:function(e){
+            this.element.focus();
+            //console.log("mouseover %t".arg(e));
+            return e.stopEvent();
+        },
+        onMouseOut:function(e){
+            //console.log("mouseout %t".arg(e));
+            return e.stopEvent();
+        },
+        onClick:function(e){
+            this.mouse.clicked=true;
+            //console.log("click %t".arg(e));
+            return e.stopEvent();
+        },
+        onContextMenu:function(e){
+            this.mouse.contextMenu=true;
+            return e.stopEvent();
+        }
     },
     keys:{
         LEFT : 37,
@@ -171,5 +183,33 @@ var Input={
         X : 88,
         Y : 89,
         Z : 90
+    },
+    cursors:{
+        auto:"auto",
+        crosshair:"crosshair",
+        def:"default",
+        eResize:"e-resize",
+        help:"help",
+        move:"move",
+        nResize:"n-resize",
+        neResize:"ne-resize",
+        nwResize:"nw-resize",
+        pointer:"pointer",
+        progress:"progress",
+        sResize:"s-resize",
+        seResize:"se-resize",
+        swResize:"sw-resize",
+        text:"text",
+        wResize:"w-resize",
+        wait:"wait"
     }
+};
+
+Event.prototype.stopEvent=function(){
+    if (this.preventDefault)
+        this.preventDefault();
+    this.stopPropagation();
+    this.returnValue = false;
+    this.cancelBubble = true;
+    return false;
 };
