@@ -57,7 +57,7 @@
 
     // And make this class extendable
     Class.extend = arguments.callee;
-    Class.statics="work";
+
     Class.className=className;
     Class.toString=function(){
         return className;
@@ -69,10 +69,11 @@
   };
 })();
 
+Class.className="Class";
 
 Class.typeInfo = function (o_or_c) {
     if (typeof o_or_c == "function") {
-        if (o_or_c.prototype instanceof Class) {
+        if (o_or_c.prototype instanceof Class || o_or_c.className) {
             return o_or_c.className;
         } else {
             var re = /function (\w*)\(\) \{ \[native code\] \}/;
@@ -91,16 +92,64 @@ Class.typeInfo = function (o_or_c) {
     }
     return "" + Object.prototype.toString.call(o_or_c);
 };
+
+Class.typeCheck = function(/*args,T1,T2,T3*/){
+    var objs=Array.prototype.slice.call(arguments[0]);
+    var types=Array.prototype.slice.call(arguments,1);
+    var matchs=[];
+    for (var i=0;i<types.length;i++){
+        var type=types[i];
+        var obj=objs[i];
+        var r=(type==Object && typeof obj=="object") ||
+              (type==String && typeof obj=="string") ||
+              (type==Number && typeof obj=="number") ||
+              (type==Boolean && typeof obj=="boolean") ||
+              (type==Function && typeof obj=="function") ||
+              (obj instanceof type);
+        matchs[i]=r;
+        if (!r){
+            //no matching function for call to 'QCoreApplication::QCoreApplication(int&, char**&, int, int, int)
+            //
+            TypeCheckError.lastError={
+              types:types,
+              objs:objs
+            };
+            return false;
+            //return new TypeError("typeCheck: Types not match, expected(%) got(%)".arg(types.map(Class.typeInfo).join(","),objs.map(Class.typeInfo).join(",")));
+        }
+//        console.log("Type %t, Obj %t, check: %".arg(type,obj,r));
+    }
+    return true;
+};
+
+
+function TypeCheckError(fnName) {
+    this.name = "TypeCheckError";
+    if (!TypeCheckError.lastError || !TypeCheckError.lastError.types || !TypeCheckError.lastError.objs){
+        this.message = "Default Message";
+    }else{
+        var types=TypeCheckError.lastError.types.map(Class.typeInfo).join(",");
+        var objs =TypeCheckError.lastError.objs.map(Class.typeInfo).join(",");
+        this.message="No matching function for call to: "+fnName+"("+objs+"), expected: "+fnName+"("+types+")";
+    }
+    TypeCheckError.lastError=null;
+}
+TypeCheckError.lastError=null;
+TypeCheckError.prototype = new TypeError();
+TypeCheckError.prototype.constructor = TypeCheckError;
+
+var $typeCheck=Class.typeCheck;
+$typeCheck.error=TypeCheckError;
+
 /**
  * String argument concatnation
  */
-
-
 String.prototype.arg= function(arg1){
     var i=0;
     var args=arguments;
     var s= this.replace(/%%|%([t]?)/g,function(match,ref){
         var arg=args[i++];
+        console.log("match: ",match," ","ref");
         if (match=="%%"){
             return "%";
         }
