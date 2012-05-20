@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="../js/g4/natives.js"></script>
+    <script type="text/javascript">
+//        g4Natives.loadImage("res/People1.png",function(e){
+//            if (!e.error)
+//                console.log(e.data.width)
+//            console.log(e)
+//        })
+//
+//        g4Natives.loadText("res/People1.json",function(e){
+//            if (!e.error)
+//                console.log(e.data)
+//            console.log(e)
+//        })
+
+//        g4Natives.loadScript("js/base.js",function(e){
+//            if (!e.error)
+//                console.log(Type)
+//            console.log(e)
+//        })
+
+
+    </script>
+</head>
+<body>
+    <canvas></canvas>
+</body>
+    <script type="text/javascript">
+
+        var ctx=g4Natives.createContext(10,10)
+
+        ctx.fillStyle="red"
+        ctx.fillRect(0,0,ctx.canvas.width, ctx.canvas.height)
+
+
+        g4Natives.getContext().drawImage(ctx.canvas,10, 10)
+    </script>
+</html>

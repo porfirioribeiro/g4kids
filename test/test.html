@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> </title>
+		<script src="../js/g4.js" type="text/javascript" charset="utf-8"></script>
+		<!--<script src="../js/base.js" type="text/javascript" charset="utf-8"></script>-->
+		<!--<script src="../js/g4/Input.js" type="text/javascript" charset="utf-8"></script>-->
+		<!--<script src="../js/canvas.js" type="text/javascript" charset="utf-8"></script>-->
+		<!--<script src="../js/game.js" type="text/javascript" charset="utf-8"></script>-->
+		<!--<script src="../js/item.js" type="text/javascript" charset="utf-8"></script>-->
+		<!--<script src="../js/scene.js" type="text/javascript" charset="utf-8"></script>-->
+        <!--&lt;!&ndash;script src="../js/resloader.js" type="text/javascript"></script&ndash;&gt;-->
+        <!--<script src="../js/signalslot.js" type="text/javascript"></script>-->
+    </head>
+    <body>
+        <canvas id="canvas" width="800" height="600" style="border:1px solid black;"></canvas>
+        <script type="text/javascript" charset="utf-8">
+
+            g4.module("test")
+            g4.requires("g4.Game","g4.Canvas","g4.Game","g4.Input")
+            g4.defines(function(){
+                var g=new g4.Game(g4.Canvas.fromId("canvas"));
+
+                console.log(g4)
+                console.log(g4.Input)
+                console.log(g4.Input.Action)
+
+                g4.Input.bind(g4.keys.ENTER,"go");
+                g4.Input.bind(g4.keys.SPACE,"go");
+
+
+                g4.Input.connect("go",function(){
+                    console.log("lets Go!!!")
+                })
+
+                var rect1=new g4.Item();
+                rect1.xSpeed=1;
+                rect1.onUpdate=function(delta){
+                    this.d=delta;
+                    if (this.x+10>=this.game.canvasWidth)
+                        this.xSpeed=-1;
+                    if (this.x<=0){
+                        this.xSpeed=1;
+                    }
+                    this.x+=this.xSpeed*(delta);
+
+//                if (g4.Input.mouse.clicked)
+//                    console.log("Clicked on canvas!");
+//                if (g4.Input.mouse.contextMenu)
+//                    console.log("Contextmenu invoked");
+                    if (g4.Input.anyKey)
+                        console.log("any key!!!")
+                };
+                rect1.onDraw=function(ctx){
+                    if (g4.Input.mouse.moving)
+                        ctx.fillStyle="red";
+                    else
+                        ctx.fillStyle="blue";
+                    ctx.drawRect(this.x,10,10,10);
+
+                };
+
+                var cursor=new g4.Item()
+                cursor.onUpdate=function(delta){
+                    this.move(g4.Input.mouse.x-5,g4.Input.mouse.y-5);
+                }
+                cursor.onDraw=function(ctx){
+                    ctx.drawRect(this.x,this.y,10,10);
+                }
+
+                var text=new g4.Item();
+                text.onDraw=function(ctx){
+                    /*
+                     font-style:  normal | italic | oblique | inherit
+                     font-variant:  normal | small-caps
+                     font-weight: normal | bold | bolder | lighter | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900
+                     font-size: xx-small | x-small | small | medium | large | x-large | xx-large | smaller | larger | <length> | <percentage>
+                     line-height: normal | <number> | <length> | <percentage>
+                     font-family:name
+
+                     */
+                    ctx.font="italic bolder xx-large Calibri";
+
+                    if (g4.Input.actions["go"].active)
+                        ctx.fillStyle="black";
+                    else
+                        ctx.fillStyle="yellow";
+                    ctx.fillText("Mouse left down: % right down: %".arg(g4.Input.mouse.leftDown,g4.Input.mouse.rightDown),10,100)
+                    ctx.fillText(parseInt(this.game.fps),10,120);
+                    ctx.fillText("Ubuntu",10,40);
+                }
+
+                g4.Input.setCursor("none");
+
+
+                g.scene.add(rect1);
+                g.scene.add(cursor);
+                g.scene.add(text);
+//            g.update=function(delta){
+//
+//            }
+
+//            g.draw=function(ctx){
+//            }
+                //g.paused=true;
+
+                var arr1=["arr1-1","arr1-2"]
+
+                function test(){
+                    Array.prototype.unshift.apply(arguments,arr1)
+                    console.log(arguments)
+                }
+
+                test("arguments1","arguments2")
+            })
+
+        </script>
+    </body>
+</html>

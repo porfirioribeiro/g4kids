@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="../js/signalslot.js"></script>
+    <script type="text/javascript">
+        var sender="The sender object"
+        var a= $signal(sender)
+
+
+        a.connect(function(o){
+            console.log(o.value+" : "+sender);
+        })
+
+        var changeColor = function(o){
+            o.style.color="red";
+        }
+        a.connect(changeColor)
+
+        //a.disconnectAll()
+        //a("arg1", "arg2");
+        //a.emitWith("Another Object","argssss","arrrr");
+
+    </script>
+</head>
+<body>
+    <input type="button" onclick="a(this)" value="0">
+    <input type="button" onclick="a(this)" value="1">
+    <input type="button" onclick="a(this)" value="2">
+    <input type="button" onclick="a(this)" value="3">
+    <input type="button" onclick="a(this)" value="4">
+    <input type="button" onclick="a(this)" value="5">
+    <input type="button" onclick="a(this)" value="6">
+    <input type="button" onclick="a(this)" value="7">
+    <input type="button" onclick="a(this)" value="8">
+    <input type="button" onclick="a(this)" value="9">
+    <br>
+    <input id="slider1" type="range" max="100" value="0" />
+    <input id="slider2" type="range" max="100" value="0" />
+    <label id="label">0</label>
+    <br>
+    <input type="button" id="button1" value="Move to 10">
+    <script type="text/javascript">
+
+        $signalFromEvent=function(element,event,property){
+            var signal=$signal(element)
+            element.addEventListener(event,function(e){
+                if (property)
+                    signal(element[property]);
+                else
+                    signal()
+            })
+            return signal;
+        }
+        label  =document.getElementById("label")
+        slider1=document.getElementById("slider1")
+        slider2=document.getElementById("slider2")
+        button1=document.getElementById("button1")
+
+
+        slider1_onChange=$signalFromEvent(slider1,"input","value")
+        slider2_onChange=$signalFromEvent(slider2,"input","value")
+
+
+        slider1_onChange.connect($prop(slider2,"value"))
+        slider2_onChange.connect($prop(slider1,"value"))
+
+        slider2_onChange.connect($prop(label,"innerText"))
+
+        slider1_onChange.connect(function(nv){
+            console.log("slider 1 changed value to: "+nv)
+        })
+        slider2_onChange.connect(function(nv){
+            console.log("slider 2 changed value to: "+nv)
+        })
+
+        console.log(slider1.constructor)
+
+
+        button1_onClick=$signalFromEvent(button1,"click")
+
+        button1_onClick.connect($prop(slider1,"value"),10)
+        button1_onClick.connect($prop(slider2,"value"),10)
+    </script>
+</body>
+</html>

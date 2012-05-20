@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="../../js/g4.js"></script>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <script type="text/javascript">
+
+        g4.addModulePath("tictactoe","")
+        g4.module("main")
+        g4.requires("tictactoe.Game","g4.Canvas")
+        g4.defines(function(){
+            g=new tictactoe.Game(g4.Canvas.fromId("canvas"));
+//            var cursor=new g4.Item()
+//            cursor.onUpdate=function(delta){
+//                this.move(g4.Input.mouse.x-5,g4.Input.mouse.y-5);
+//            }
+//            cursor.onDraw=function(ctx){
+//                ctx.drawRect(this.x,this.y,10,10);
+//            }
+//            g.scene.add(cursor)
+        })
+    </script>
+</body>
+</html>

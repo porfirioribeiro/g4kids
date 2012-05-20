@@ -1,0 +1,4 @@
+#/bin/sh
+
+DIR=$(cd "$(dirname "$0")" ; pwd)
+coffee -b -w -o $DIR/js -c $DIR/src
